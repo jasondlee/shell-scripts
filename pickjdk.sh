@@ -10,6 +10,24 @@
 # 'pickjdk' alone to bring up a menu of installed JDKs on OS X. Select one.
 # 'pickjdk <jdk number>' to immediately switch to one of those JDKs.
 
+CONFFILE=~/.pickjdk.conf
+
+unset JDKS_ROOT
+declare -a JDKS_ROOT
+
+if [ ! -e $CONFFILE ] ; then
+    echo "/usr/lib/jvm 
+/usr/java 
+/Library/Java/JavaVirtualMachines 
+~/.sdkman/candidates/java" > $CONFFILE
+fi
+
+for P in `cat $CONFFILE` ; do
+    if [ -d $P ] ; then
+        JDKS_ROOT+=($P)
+    fi
+done
+
 _checkos()
 {
     if [ $(uname -s) = $1 ]; then
@@ -19,29 +37,18 @@ _checkos()
     fi
 }
 
-unset JDKS_ROOT
-declare -a JDKS_ROOT
-
-for P in /usr/lib/jvm /usr/java /Library/Java/JavaVirtualMachines ~/.sdkman/candidates/java ; do
-    if [ -d $P ] ; then
-        JDKS_ROOT+=($P)
+addjdkroot() {
+    LC=`cat $CONFFILE | grep $1 | wc -l`
+    if [ $LC == 0 ] ; then
+        echo $1 >> $CONFFILE
+        echo JDK root added.
+    else
+        echo JDK root already added.
     fi
-done
-
-#if [ -z "$JDKS_ROOT" ] ; then
-#    if _checkos Linux ; then
-#        JDKS_ROOT=/usr/lib/jvm
-#    elif _checkos Darwin ; then
-#        JDKS_ROOT=/Library/Java/JavaVirtualMachines
-#    fi
-#fi
+}
 
 pickjdk()
 {
-    #if [ -z "$JDKS_ROOT" ]; then
-    #    return 1
-    #fi
-
     declare -a JDKS
     local n=1 jdk total_jdks choice=0 currjdk=$JAVA_HOME explicit_jdk
     for root in ${JDKS_ROOT[@]} ; do

@@ -19,40 +19,51 @@ _checkos()
     fi
 }
 
-if [ -z "$JDKS_ROOT" ] ; then
-    if _checkos Linux ; then
-        JDKS_ROOT=/usr/lib/jvm
-    elif _checkos Darwin ; then
-        JDKS_ROOT=/Library/Java/JavaVirtualMachines
+unset JDKS_ROOT
+declare -a JDKS_ROOT
+
+for P in /usr/lib/jvm /usr/java /Library/Java/JavaVirtualMachines ~/.sdkman/candidates/java ; do
+    if [ -d $P ] ; then
+        JDKS_ROOT+=($P)
     fi
-fi
+done
+
+#if [ -z "$JDKS_ROOT" ] ; then
+#    if _checkos Linux ; then
+#        JDKS_ROOT=/usr/lib/jvm
+#    elif _checkos Darwin ; then
+#        JDKS_ROOT=/Library/Java/JavaVirtualMachines
+#    fi
+#fi
 
 pickjdk()
 {
-    if [ -z "$JDKS_ROOT" ]; then
-        return 1
-    fi
+    #if [ -z "$JDKS_ROOT" ]; then
+    #    return 1
+    #fi
 
     declare -a JDKS
     local n=1 jdk total_jdks choice=0 currjdk=$JAVA_HOME explicit_jdk
-    for jdk in $JDKS_ROOT/[0-9a-z]*; do
-        if [ -d $jdk -a -e $jdk/bin ]; then
-            JDKNAMES[$n]="$(basename $jdk)"
-            if _checkos Darwin ; then
-                jdk=$jdk/Contents/Home
+    for root in ${JDKS_ROOT[@]} ; do
+        for jdk in $root/[0-9a-z]*; do
+            if [ -d $jdk -a ! -L $jdk -a -e $jdk/bin ]; then
+                JDKNAMES[$n]="$(basename $jdk)"
+                if _checkos Darwin ; then
+                    jdk=$jdk/Contents/Home
+                fi
+                if [ -z "$1" ]; then
+                    echo -n " $n) ${JDKNAMES[$n]}"
+                    if [ $jdk = "$currjdk" ]; then
+                        echo " < CURRENT"
+                    else
+                        echo
+                    fi
+                fi
+                JDKS[$n]=$jdk
+                total_jdks=$n
+                n=$[ $n + 1 ]
             fi
-            if [ -z "$1" ]; then
-              echo -n " $n) ${JDKNAMES[$n]}"
-              if [ $jdk = "$currjdk" ]; then
-                  echo " < CURRENT"
-              else
-                  echo
-              fi
-            fi
-            JDKS[$n]=$jdk
-            total_jdks=$n
-            n=$[ $n + 1 ]
-        fi
+        done
     done
     if [ -z "$1" ]; then
       echo " $n) None"

@@ -10,6 +10,9 @@
 # 'pickjdk' alone to bring up a menu of installed JDKs on OS X. Select one.
 # 'pickjdk <jdk number>' to immediately switch to one of those JDKs.
 
+# Huge tip o' the hat to Nick Sieger for starting this script years ago:
+#     https://twitter.com/nicksieger/status/1166070669244796929
+
 CONFFILE=~/.pickjdk.conf
 
 unset JDKS_ROOT

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+OPTIONS="-el" # -olstart"
+OPTIONS="-ef" # -olstart"
+
+ps $OPTIONS | head -1
+ps $OPTIONS | grep $* | grep -v grep | grep -v psg

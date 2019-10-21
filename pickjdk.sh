@@ -22,7 +22,7 @@ if [ ! -e $CONFFILE ] ; then
     echo "/usr/lib/jvm 
 /usr/java 
 /Library/Java/JavaVirtualMachines 
-~/.sdkman/candidates/java" > $CONFFILE
+$HOME/.sdkman/candidates/java" > $CONFFILE
 fi
 
 for P in `cat $CONFFILE` ; do

@@ -62,6 +62,7 @@ pickjdk()
                     jdk=$jdk/Contents/Home
                 fi
                 if [ -z "$1" ]; then
+                    #echo "jdk = $jdk currjdk = $currjdk"
                     echo -n " $n) ${JDKNAMES[$n]}"
                     if [ $jdk = "$currjdk" ]; then
                         echo " < CURRENT"
@@ -76,8 +77,11 @@ pickjdk()
         done
     done
     if [ -z "$1" ]; then
-      echo " $n) None"
+      echo " $n) No change"
+      echo " $[ $n + 1 ]) None"
     fi
+    JDKS[$n]="No change"
+    n=$[ $n + 1 ]
     JDKS[$n]=None
     total_jdks=$n
 
@@ -96,10 +100,14 @@ pickjdk()
         currjdk=$(dirname $(dirname $(type -path java)))
     fi
 
-    if [ ${JDKS[$choice]} != None ]; then
+    OPTION="${JDKS[$choice]}"
+    if [ "$OPTION" != "No change" -a "$OPTION" != "None" ]; then
         export JAVA_HOME=${JDKS[$choice]}
+        echo "New JDK: ${JDKNAMES[$choice]}"
     else
-        unset JAVA_HOME
+        if [ "$OPTION" == "None" ] ; then
+            unset JAVA_HOME
+        fi
     fi
 
     explicit_jdk=
@@ -119,8 +127,6 @@ pickjdk()
     elif [ "$JAVA_HOME" ]; then
         PATH="$JAVA_HOME/bin:$PATH"
     fi
-
-    echo "New JDK: ${JDKNAMES[$choice]}"
 
     hash -r
 }

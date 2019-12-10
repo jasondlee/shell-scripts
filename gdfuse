@@ -1,0 +1,5 @@
+#!/bin/bash
+#su $USERNAME -l -c "google-drive-ocamlfuse -label $1 $*"
+mount | grep "${HOME}/GoogleDrive" >/dev/null || /usr/bin/google-drive-ocamlfuse "${HOME}/GoogleDrive"&
+exit 0
+

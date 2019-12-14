@@ -15,11 +15,11 @@ sudo dnf update
 sudo systemctl mask systemd-udev-settle
 
 # Install commonly used packages
-sudo dnf install kdiff3 thunderbird pidgin quassel-client the_silver_searcher git git-cola python3-pyside  \
+sudo dnf install -y kdiff3 thunderbird pidgin quassel-client the_silver_searcher git git-cola python3-pyside  \
     python3-speedtest-cli vim-enhanced postgresql-server compat-ffmpeg28 \
     libreoffice-calc libreoffice-writer akmod-nvidia xorg-x11-drv-nvidia-cuda dkms acpid \
     ffmpeg-libs libatomic mc pidgin gstreamer1-libav gstreamer1-vaapi gstreamer1-plugins-{good,good-extras,ugly} \
-    gstreamer1-plugin-openh264 mozilla-openh264 jq gitk hplip hplip-gui
+    gstreamer1-plugin-openh264 mozilla-openh264 jq gitk hplip hplip-gui youtube-dl mscore
 
 #sdkman
 curl -s "https://get.sdkman.io" | bash &&  source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -31,3 +31,7 @@ done
 sudo dnf copr enable sergiomb/google-drive-ocamlfuse
 sudo dnf install google-drive-ocamlfuse
 
+# Android emulator acceleration support
+sudo dnf group install --with-optional virtualization -y
+sudo systemctl start libvirtd
+sudo systemctl enable libvirtd

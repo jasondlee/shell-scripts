@@ -35,3 +35,12 @@ sudo dnf install google-drive-ocamlfuse
 sudo dnf group install --with-optional virtualization -y
 sudo systemctl start libvirtd
 sudo systemctl enable libvirtd
+
+# idrive
+cd ~/Downloads
+wget https://www.idrivedownloads.com/downloads/linux/download-for-linux/IDriveForLinux.zip
+mkdir -p ~/local/idrive/bin
+mkdir -p ~/local/idrive/var/restore
+unzip IDriveForLinux.zip
+mv IDriveForLinux/scripts/* ~/local/idrive/bin/
+chmod +x ~/local/idrive/bin/*pl

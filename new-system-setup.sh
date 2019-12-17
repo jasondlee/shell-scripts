@@ -19,7 +19,9 @@ sudo dnf install -y kdiff3 thunderbird pidgin quassel-client the_silver_searcher
     python3-speedtest-cli vim-enhanced postgresql-server compat-ffmpeg28 libreoffice-calc libreoffice-writer \
     akmod-nvidia xorg-x11-drv-nvidia-cuda dkms acpid ffmpeg-libs libatomic mc pidgin gstreamer1-libav \
     gstreamer1-vaapi gstreamer1-plugins-{good,good-extras,ugly} gstreamer1-plugin-openh264 mozilla-openh264 jq \
-    gitk hplip hplip-gui youtube-dl mscore restic
+    gitk hplip hplip-gui youtube-dl mscore restic kaccounts-providers 
+
+# Broken? ktp-accounts-kcm
 
 #sdkman
 curl -s "https://get.sdkman.io" | bash &&  source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -50,3 +52,18 @@ cd ~/Downloads
 wget https://downloads.slack-edge.com/linux_releases/slack-4.2.0-0.1.fc21.x86_64.rpm
 sudo dnf install -y ./slack*rpm
 rm slack*rpm
+
+# Jetbrains Toolbox
+cd ~/Downloads
+wget https://download.jetbrains.com/toolbox/jetbrains-toolbox-1.16.6207.tar.gz
+tar xzf jetbrains-toolbox*
+mkdir -p ~/local/bin
+mv jetbrains-toolbox-1.16.6207/jetbrains-toolbox ~/local/bin/
+
+# Flyway
+wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/6.1.2/flyway-commandline-6.1.2-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-6.1.2/flyway /usr/local/bin 
+
+#DBeaver
+wget https://dbeaver.io/files/dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
+tar xf dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
+mv dbeaver ~/local/

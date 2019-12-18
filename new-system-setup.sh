@@ -19,7 +19,7 @@ sudo dnf install -y kdiff3 thunderbird pidgin quassel-client the_silver_searcher
     python3-speedtest-cli vim-enhanced postgresql-server compat-ffmpeg28 libreoffice-calc libreoffice-writer \
     akmod-nvidia xorg-x11-drv-nvidia-cuda dkms acpid ffmpeg-libs libatomic mc pidgin gstreamer1-libav \
     gstreamer1-vaapi gstreamer1-plugins-{good,good-extras,ugly} gstreamer1-plugin-openh264 mozilla-openh264 jq \
-    gitk hplip hplip-gui youtube-dl mscore restic kaccounts-providers 
+    gitk hplip hplip-gui youtube-dl mscore restic kaccounts-providers vlc
 
 # Broken? ktp-accounts-kcm
 
@@ -67,3 +67,6 @@ wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/6.1.2/f
 wget https://dbeaver.io/files/dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 tar xf dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 mv dbeaver ~/local/
+
+# Keybase
+sudo yum install https://prerelease.keybase.io/keybase_amd64.rpm

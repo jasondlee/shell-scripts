@@ -19,7 +19,7 @@ sudo dnf install -y kdiff3 thunderbird pidgin quassel-client the_silver_searcher
     python3-speedtest-cli vim-enhanced postgresql-server compat-ffmpeg28 libreoffice-calc libreoffice-writer \
     akmod-nvidia xorg-x11-drv-nvidia-cuda dkms acpid ffmpeg-libs libatomic mc pidgin gstreamer1-libav \
     gstreamer1-vaapi gstreamer1-plugins-{good,good-extras,ugly} gstreamer1-plugin-openh264 mozilla-openh264 jq \
-    gitk hplip hplip-gui youtube-dl mscore restic kaccounts-providers vlc
+    gitk hplip hplip-gui youtube-dl mscore restic kaccounts-providers vlc code
 
 # Broken? ktp-accounts-kcm
 
@@ -59,6 +59,7 @@ wget https://download.jetbrains.com/toolbox/jetbrains-toolbox-1.16.6207.tar.gz
 tar xzf jetbrains-toolbox*
 mkdir -p ~/local/bin
 mv jetbrains-toolbox-1.16.6207/jetbrains-toolbox ~/local/bin/
+rm -rf jetbrains-toolbox-1.16.6207
 
 # Flyway
 wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/6.1.2/flyway-commandline-6.1.2-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-6.1.2/flyway /usr/local/bin 
@@ -67,6 +68,7 @@ wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/6.1.2/f
 wget https://dbeaver.io/files/dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 tar xf dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 mv dbeaver ~/local/
+rm dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 
 # Keybase
-sudo yum install https://prerelease.keybase.io/keybase_amd64.rpm
+sudo yum install -y https://prerelease.keybase.io/keybase_amd64.rpm

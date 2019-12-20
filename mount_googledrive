@@ -1,5 +1,10 @@
 #!/bin/bash
 #su $USERNAME -l -c "google-drive-ocamlfuse -label $1 $*"
+
+if [ "$1" == "-f" ] ; then
+    mount | grep "${HOME}/GoogleDrive" >/dev/null || sudo umount -f /home/jdlee/GoogleDrive
+    killall -9 google-drive-ocamlfuse 2>/dev/null
+fi
+
 mount | grep "${HOME}/GoogleDrive" >/dev/null || /usr/bin/google-drive-ocamlfuse "${HOME}/GoogleDrive"&
 exit 0
-

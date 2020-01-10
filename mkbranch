@@ -1,0 +1,22 @@
+#!/bin/bash
+
+REMOTE=false
+
+while getopts "r" OPTION; do
+    case $OPTION in
+        r) REMOTE=true ;;
+        *)
+            echo "Incorrect options provided"
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+BRANCH=$1
+
+git checkout -b $BRANCH
+if [ "$REMOTE" == "true" ] ; then
+    git push --set-upstream origin $BRANCH
+fi
+git tag "start_of_$BRANCH"

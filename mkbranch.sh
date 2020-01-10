@@ -1,6 +1,0 @@
-#!/bin/bash
-
-BRANCH=$1
-
-git checkout -b $BRANCH
-git push --set-upstream origin $BRANCH

@@ -19,7 +19,7 @@ sudo dnf install -y kdiff3 thunderbird pidgin quassel-client the_silver_searcher
     python3-speedtest-cli vim-enhanced postgresql-server compat-ffmpeg28 libreoffice-calc libreoffice-writer \
     akmod-nvidia xorg-x11-drv-nvidia-cuda dkms acpid ffmpeg-libs libatomic mc pidgin gstreamer1-libav \
     gstreamer1-vaapi gstreamer1-plugins-{good,good-extras,ugly} gstreamer1-plugin-openh264 mozilla-openh264 jq \
-    gitk hplip hplip-gui youtube-dl mscore restic kaccounts-providers vlc code
+    gitk hplip hplip-gui youtube-dl mscore restic kaccounts-providers vlc code gimp
 
 # Broken? ktp-accounts-kcm
 
@@ -72,3 +72,9 @@ rm dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 
 # Keybase
 sudo yum install -y https://prerelease.keybase.io/keybase_amd64.rpm
+
+#Bitwarden
+cd ~/local/bin
+wget "https://vault.bitwarden.com/download/?app=desktop&platform=linux" -O bitwarden
+chmod +x bitwarden
+cd -

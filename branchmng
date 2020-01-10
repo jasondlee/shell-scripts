@@ -1,0 +1,81 @@
+#!/bin/bash
+
+PARENTFILE=~/.gitbranchparents
+
+REMOTE=false
+UPDATE=false
+
+function currentBranch() {
+    git branch | grep ^\* | cut -f 2 -d ' '
+}
+
+function updateBranch() {
+    echo "Updating branch..."
+    if [ "$UPDATE" == "true" ] ; then  
+        git pull -p
+    fi
+}
+
+function getParent() {
+    CURR=`currentBranch`
+    if [ -e $PARENTFILE ] ; then
+        cat $PARENTFILE | grep $CURR | cut -f 2 -d '|'
+    fi
+}
+
+function usage() {
+    echo "Utility for managing git branches"
+    echo "usage: branchmanage [-ru] {create|update|delete} <branch name>"
+    echo "       -r : (Create and delete only) Track/delete remote branch"
+    echo "       -u : Update affected branches prior to operation"
+    echo "       create: Create a new branch based on the current"
+    echo "       update: Merge parent branch into current"
+    echo "       delete: Delete the specified branch"
+    exit 1
+}
+
+while getopts "ru" OPTION; do
+    case $OPTION in
+        r) REMOTE=true ;;
+        u) UPDATE=true ;;
+        *) usage ;;
+    esac
+done
+shift $((OPTIND -1))
+
+CMD=$1
+BRANCH=$2
+
+if [ "$CMD" == "" ] ; then
+    usage
+fi
+
+if [ "$CMD" == "create" ] ; then
+    if [ "$BRANCH" == "" ] ; then
+        usage
+    fi
+    CURR=`currentBranch`
+    updateBranch
+    git checkout -b $BRANCH
+    if [ "$REMOTE" == "true" ] ; then
+        git push --set-upstream origin $BRANCH
+    fi
+    echo "$BRANCH|$CURR" >> $PARENTFILE
+elif [ "$CMD" == "update" ] ; then
+    CURR=`currentBranch`
+    PARENT=`getParent`
+
+    if [ "$PARENT" == "" ] ; then  
+        echo "Unable to determine the parent branch. Exiting..."
+        exit 1
+    fi
+    
+    echo `updateBranch`
+    git checkout $PARENT
+    echo `updateBranch`
+    git checkout $CURR
+    git merge $PARENT
+else
+    echo "Unknown command: $CMD"
+    exit 1
+fi

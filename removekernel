@@ -1,0 +1,12 @@
+#!/bin/bash
+
+VERS=$1
+
+if [ "$VERS" == "" ] ; then
+    echo "You must specify a version (e.g., \"5.3.7-301.fc31\")"
+    exit -1
+fi
+
+rpm -qa | grep kernel | grep $VERS 
+read -p "The following kernel and its dependencies will be deleted. Press enter to continue..." foo
+rpm -qa | grep kernel | grep $VERS | xargs sudo dnf remove -y

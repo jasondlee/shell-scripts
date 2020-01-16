@@ -2,8 +2,8 @@
 
 PARENTFILE=~/.gitbranchparents
 
-REMOTE=false
-UPDATE=false
+REMOTE=true
+UPDATE=true
 
 function currentBranch() {
     git branch | grep ^\* | cut -f 2 -d ' '
@@ -26,17 +26,17 @@ function getParent() {
 function usage() {
     echo "Utility for managing git branches"
     echo "usage: branchmanage [-ru] {create|update|delete} <branch name>"
-    echo "       -r : (Create and delete only) Track/delete remote branch"
-    echo "       -u : Update affected branches prior to operation"
+    echo "       -R : (Create and delete only) Do NOT track/delete remote branch"
+    #echo "       -u : Update affected branches prior to operation"
     echo "       create: Create a new branch based on the current"
     echo "       update: Merge parent branch into current"
     echo "       delete: Delete the specified branch"
     exit 1
 }
 
-while getopts "ru" OPTION; do
+while getopts "Ru" OPTION; do
     case $OPTION in
-        r) REMOTE=true ;;
+        R) REMOTE=false ;;
         u) UPDATE=true ;;
         *) usage ;;
     esac
@@ -75,6 +75,8 @@ elif [ "$CMD" == "update" ] ; then
     echo `updateBranch`
     git checkout $CURR
     git merge $PARENT
+elif [ "$CMD" == "parent" ] ; then
+    echo The parent branch is `getParent`
 else
     echo "Unknown command: $CMD"
     exit 1

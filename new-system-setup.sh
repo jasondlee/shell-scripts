@@ -48,10 +48,7 @@ mv IDriveForLinux/scripts/* ~/local/idrive/bin/
 chmod +x ~/local/idrive/bin/*pl
 
 # Slack
-cd ~/Downloads
-wget https://downloads.slack-edge.com/linux_releases/slack-4.2.0-0.1.fc21.x86_64.rpm
-sudo dnf install -y ./slack*rpm
-rm slack*rpm
+sudo dnf install -y https://downloads.slack-edge.com/linux_releases/slack-4.2.0-0.1.fc21.x86_64.rpm
 
 # Jetbrains Toolbox
 cd ~/Downloads
@@ -64,7 +61,7 @@ rm -rf jetbrains-toolbox-1.16.6207
 # Flyway
 wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/6.1.2/flyway-commandline-6.1.2-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-6.1.2/flyway /usr/local/bin 
 
-#DBeaver
+# DBeaver
 wget https://dbeaver.io/files/dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 tar xf dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 mv dbeaver ~/local/
@@ -73,8 +70,10 @@ rm dbeaver-ce-latest-linux.gtk.x86_64.tar.gz
 # Keybase
 sudo yum install -y https://prerelease.keybase.io/keybase_amd64.rpm
 
-#Bitwarden
-cd ~/local/bin
-wget "https://vault.bitwarden.com/download/?app=desktop&platform=linux" -O bitwarden
-chmod +x bitwarden
-cd -
+# Bitwarden
+wget "https://vault.bitwarden.com/download/?app=desktop&platform=linux" -O ~/local/bin/bitwarden
+chmod +x ~/local/bin/bitwarden
+
+# DiffMerge
+sudo dnf install -y http://download.sourcegear.com/DiffMerge/4.2.0/diffmerge-4.2.0.697.stable-1.x86_64.rpm
+

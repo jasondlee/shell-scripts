@@ -2,11 +2,13 @@
 
 CMD=$1
 
+        #--exclude /home/jdlee/Dropbox \
+        #--exclude /home/jdlee/GoogleDrive \
+
 if [ "$CMD" == "backup" ] ; then
     restic -r sftp:backup@perry:restic-repo  \
         --password-file=/home/jdlee/.restic \
-        --exclude /home/jdlee/Dropbox \
-        --exclude /home/jdlee/GoogleDrive \
+        --exclude-file=/home/jdlee/src/steeplesoft/shell-scripts/backup.exclude \
         --cleanup-cache \
         backup \
         /etc/X11/xorg.conf.d/ \

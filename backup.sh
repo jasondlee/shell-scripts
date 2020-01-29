@@ -25,6 +25,19 @@ elif [ "$CMD" == "cleanup" ] ; then
         forget \
         --keep-last 30 \
         --prune
+elif [ "$CMD" == "restore" ] ; then
+    DIR=$2
+    
+    if [ "$DIR" == "" -o ! -e "$DIR" ] ; then
+        echo "Please specify a target directory"
+        exit 1
+    fi
+
+    restic -r sftp:backup@perry:restic-repo \
+        --password-file=/home/jdlee/.restic \
+        restore \
+        latest \
+        --target $2
 else
     echo "Unknown command: '$CMD'"
     exit 1

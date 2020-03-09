@@ -19,7 +19,7 @@ function updateBranch() {
 function getParent() {
     CURR=`currentBranch`
     if [ -e $PARENTFILE ] ; then
-        cat $PARENTFILE | grep $CURR | cut -f 2 -d '|'
+        cat $PARENTFILE | grep "^$CURR" | cut -f 2 -d '|'
     fi
 }
 

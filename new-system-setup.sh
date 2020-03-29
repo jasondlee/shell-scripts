@@ -26,7 +26,8 @@ sudo dnf install -y kdiff3 thunderbird pidgin quassel-client the_silver_searcher
     snapd vim-enhanced thunderbird quassel-client pidgin \
     https://prerelease.keybase.io/keybase_amd64.rpm \
     https://downloads.slack-edge.com/linux_releases/slack-4.3.2-0.1.fc21.x86_64.rpm \
-    http://download.sourcegear.com/DiffMerge/4.2.0/diffmerge-4.2.0.697.stable-1.x86_64.rpm
+    http://download.sourcegear.com/DiffMerge/4.2.0/diffmerge-4.2.0.697.stable-1.x86_64.rpm \
+    https://release.gitkraken.com/linux/gitkraken-amd64.rpm
 
 # Broken? ktp-accounts-kcm
 

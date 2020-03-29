@@ -1,0 +1,7 @@
+#!/bin/bash
+
+BRANCH=$1
+
+read -p "About to delete the branch '$BRANCH' from local and remote. Press enter to continue or CTRL-C to abort... " 
+git branch -D $BRANCH
+git push origin --delete $BRANCH

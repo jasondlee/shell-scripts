@@ -3,6 +3,12 @@
 CMD=$1
 DIR=$2
 
+KEEP=168
+
+function wrap_restic() {
+    restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+        $*
+}
 function backup() {
     restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
         --exclude-file=/home/jdlee/src/steeplesoft/shell-scripts/backup.exclude \
@@ -21,7 +27,7 @@ function backup() {
 function cleanup() {
     restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
         forget \
-        --keep-last 168 \
+        --keep-last $KEEP \
         --prune
 }
 
@@ -40,19 +46,26 @@ elif [ "$CMD" == "cleanup" ] ; then
 elif [ "$CMD" == "restore" ] ; then
     checkdir 
 
-    restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
-        restore \
-        latest \
-        --target $DIR
-elif [ "$CMD" == "restore" ] ; then
+    #restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    wrap_restic restore latest --target $DIR
+elif [ "$CMD" == "mount" ] ; then
     checkdir 
 
-    restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
-        mount \
-        $DIR
+    #restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    wrap_restic mount $DIR
 elif [ "$CMD" == "list" ] ; then
-    restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
-        snapshots
+    #restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    wrap_restic --no-lock snapshots
+elif [ "$CMD" == "unlock" ] ; then
+    #restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    wrap_restic unlock
+elif [ "$CMD" == "status" ] ; then
+    COUNT=`psg -ef | grep restic | grep -v grep | wc -l`
+    if [ "$COUNT" == "1" ]; then
+        echo Backup is running
+    else
+        echo Backup is not running
+    fi
 else
     echo "Unknown command: '$CMD'"
     exit 1

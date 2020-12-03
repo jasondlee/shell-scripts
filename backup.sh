@@ -3,15 +3,15 @@
 CMD=$1
 DIR=$2
 
-KEEP=168
+KEEP=7
 
 function wrap_restic() {
-    restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    restic -r sftp:restic@perry:restic-repo --password-file=/home/jdlee/.restic \
         $*
 }
 function backup() {
-    restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
-        --exclude-file=/home/jdlee/src/steeplesoft/shell-scripts/backup.exclude \
+    restic -r sftp:restic@perry:restic-repo --password-file=/home/jdlee/.restic \
+        --exclude-file=/home/jdlee/src/personal/shell-scripts/backup.exclude \
         --cleanup-cache \
         backup \
         /etc/X11/xorg.conf.d/ \
@@ -25,7 +25,7 @@ function backup() {
 }
 
 function cleanup() {
-    restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    restic -r sftp:restic@perry:restic-repo --password-file=/home/jdlee/.restic \
         forget \
         --keep-last $KEEP \
         --prune
@@ -46,18 +46,18 @@ elif [ "$CMD" == "cleanup" ] ; then
 elif [ "$CMD" == "restore" ] ; then
     checkdir 
 
-    #restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    #restic -r sftp:restic@perry:restic-repo --password-file=/home/jdlee/.restic \
     wrap_restic restore latest --target $DIR
 elif [ "$CMD" == "mount" ] ; then
     checkdir 
 
-    #restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    #restic -r sftp:restic@perry:restic-repo --password-file=/home/jdlee/.restic \
     wrap_restic mount $DIR
 elif [ "$CMD" == "list" ] ; then
-    #restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    #restic -r sftp:restic@perry:restic-repo --password-file=/home/jdlee/.restic \
     wrap_restic --no-lock snapshots
 elif [ "$CMD" == "unlock" ] ; then
-    #restic -r sftp:backup@perry:restic-repo --password-file=/home/jdlee/.restic \
+    #restic -r sftp:restic@perry:restic-repo --password-file=/home/jdlee/.restic \
     wrap_restic unlock
 elif [ "$CMD" == "status" ] ; then
     COUNT=`psg -ef | grep restic | grep -v grep | wc -l`

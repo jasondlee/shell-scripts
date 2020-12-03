@@ -10,7 +10,8 @@ function currentBranch() {
 }
 
 function updateBranch() {
-    echo "Updating branch..."
+    CURR=`currentBranch`
+    echo "===== Updating branch $CURR..."
     if [ "$UPDATE" == "true" ] ; then  
         git pull -p
     fi
@@ -74,6 +75,7 @@ elif [ "$CMD" == "update" ] ; then
     git checkout $PARENT
     echo `updateBranch`
     git checkout $CURR
+    echo "===== Merging $PARENT into $CURR"
     git merge $PARENT
 elif [ "$CMD" == "parent" ] ; then
     echo The parent branch is `getParent`

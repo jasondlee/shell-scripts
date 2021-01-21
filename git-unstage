@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for FILE in $* ; do
+    git restore --staged $FILE
+done

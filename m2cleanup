@@ -1,0 +1,48 @@
+#!/bin/sh
+
+fail() {
+    echo "$1"
+    printHelp
+    exit 1
+}
+
+printArgHelp() {
+    echo -e "${1}\t${2}"
+}
+
+printHelp() {
+    echo "Attempts to find Maven snapshots older than the days specified and removes them."
+    printArgHelp "-d" "The number of days. Defaults to 60."
+    echo "Usage: ${0##*/} -d 60"
+}
+
+validateNumber() {
+    regex='^[0-9]+$'
+    if ! [[ ${1} =~ ${regex} ]] ; then
+        fail "error: Argument \"${1}\" is not a number." >&2; 
+    fi
+}
+
+MAVEN_REPO="${HOME}/.m2/repository"
+DAYS=60
+
+while getopts ":d:h" opt; do
+    case ${opt} in
+        d)
+            DAYS="${OPTARG}"
+            validateNumber "${DAYS}"
+            ;;
+        h)
+            printHelp
+            exit 0
+            ;;
+        :)
+            echo "Option -${OPTARG} requires an argument" >&2
+            exit 1
+            ;;
+    esac
+done
+
+# Find all SNAPSHOT directories and delete old SNAPSHOT's
+echo "Deleting maven SNAPSHOT's older than ${DAYS} days"
+find "$MAVEN_REPO" -type d -mtime +"${DAYS}" -name "*SNAPSHOT" | xargs -I {} rm -rfv "{}"

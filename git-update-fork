@@ -1,14 +1,16 @@
 #!/bin/bash
 
 MERGE=false
+REBASE=false
 UPSTREAM=upstream
 BRANCH=master
 
-while getopts "b:mu:" OPTION; do
+while getopts "b:u:rm" OPTION; do
     case $OPTION in
         b) BRANCH=$OPTARG ;;
-        m) MERGE=true ;;
         u) UPSTREAM=$OPTARG ;;
+        r) REBASE=true ; MERGE=false ;;
+        m) MERGE=true ; REBASE=false ;;
         *) usage ;;
     esac
 done
@@ -18,12 +20,14 @@ CUR=`git branch --show-current`
 
 
 git fetch $UPSTREAM && \
-    git checkout master && \
-    git merge $UPSTREAM/$BRANCH &&
+    git checkout $BRANCH && \
+    git rebase $UPSTREAM/$BRANCH &&
     git checkout $CUR
 
 if [ "$MERGE" == "true" ] ; then
     git merge master
 fi
 
-
+if [ "$REBASE" == "true" ] ; then
+    git rebase master
+fi

@@ -3,8 +3,10 @@
 VERS=$1
 
 if [ "$VERS" == "" ] ; then
-    echo "You must specify a version (e.g., \"5.3.7-301.fc31\")"
-    exit -1
+    #echo "You must specify a version (e.g., \"5.3.7-301.fc31\")"
+    #exit -1
+    OLDEST=`ls -t /boot/vmlinuz-[1-9]* | tail -1`
+    VERS=`echo $OLDEST | cut -f 2- -d -`
 fi
 
 rpm -qa | grep kernel | grep $VERS 

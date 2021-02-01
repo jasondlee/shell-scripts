@@ -22,4 +22,5 @@ else
     TARGET="$REMOTE/$BRANCH"
 fi
 
+echo "Showing log of local workspace compared to $TARGET"
 git log --oneline $TARGET...HEAD --author="$EMAIL"

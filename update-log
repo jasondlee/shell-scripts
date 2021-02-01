@@ -1,0 +1,9 @@
+#!/bin/bash
+
+TXN=$1
+
+if [ "$TXN" == "" ] ; then
+    TXB=`sudo dnf history | cut -f 1 -d '|' | head -3  | tail -1`
+fi
+
+sudo dnf history info $TXN

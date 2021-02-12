@@ -3,18 +3,24 @@
 REMOTE=origin
 BRANCH=master
 LOCAL=false
+EMAIL=`git config user.email`
+AUTHOR="--author=\"$EMAIL\""
 
-while getopts "b:r:l" OPTION; do
+function usage() {
+    exit -1
+}
+
+while getopts "ab:r:l" OPTION; do
     case $OPTION in
         b) BRANCH=$OPTARG ;;
         r) REMOTE=$OPTARG ;;
         l) LOCAL=true ;;
+        a) AUTHOR="" ;;
         *) usage ;;
     esac
 done
 shift $((OPTIND -1))
 
-EMAIL=`git config user.email`
 
 if [ "$LOCAL" == "true" ] ; then
     TARGET=master
@@ -22,4 +28,7 @@ else
     TARGET="$REMOTE/$BRANCH"
 fi
 
-git log --oneline $TARGET...HEAD --author="$EMAIL"
+echo "Showing log of local workspace compared to $TARGET"
+CMD="git log --oneline $TARGET...HEAD $AUTHOR"
+
+eval $CMD

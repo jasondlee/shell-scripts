@@ -11,9 +11,9 @@ if [ "$VERS" == "" ] ; then
 fi
 
 if [ "$VERS" != "" ] ; then
-    rpm -qa | grep kernel | grep $VERS 
+    rpm -qa | grep kernel | grep $VERS | grep -v `uname -r`
     read -p "The following kernel and its dependencies will be deleted. Press enter to continue..." foo
-    rpm -qa | grep kernel | grep $VERS | xargs sudo dnf remove -y
+    rpm -qa | grep kernel | grep $VERS | grep -v `uname -r` | xargs sudo dnf remove -y
 else
     echo No kernel to remove
 fi

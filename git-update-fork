@@ -5,6 +5,10 @@ REBASE=false
 UPSTREAM=upstream
 BRANCH=master
 
+if [ `git branch | grep main | wc -l` == 1 ] ; then
+    BRANCH=main
+fi
+
 while getopts "b:u:rm" OPTION; do
     case $OPTION in
         b) BRANCH=$OPTARG ;;
@@ -19,7 +23,7 @@ shift $((OPTIND -1))
 CUR=`git branch --show-current`
 
 
-git fetch $UPSTREAM && \
+git fetch $UPSTREAM -p && \
     git checkout $BRANCH && \
     git rebase $UPSTREAM/$BRANCH &&
     git checkout $CUR

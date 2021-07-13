@@ -29,9 +29,9 @@ git fetch $UPSTREAM -p && \
     git checkout $CUR
 
 if [ "$MERGE" == "true" ] ; then
-    git merge master
+    git merge $BRANCH
 fi
 
 if [ "$REBASE" == "true" ] ; then
-    git rebase master
+    git rebase $BRANCH
 fi

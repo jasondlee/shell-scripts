@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 BIN="common/bin"
 LOCAL="/usr/local/bin"

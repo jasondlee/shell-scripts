@@ -1,5 +1,14 @@
 #!/bin/bash
 
+set -euo pipefail
+
+# Only output color if the command isn't being piped.
+if [ -t 1 ]; then
+  COLOR="always"
+else
+  COLOR="auto"
+fi
+
 REMOTE=origin
 BRANCH=master
 LOCAL=false
@@ -29,6 +38,6 @@ else
 fi
 
 echo "Showing log of local workspace compared to $TARGET"
-CMD="git log --oneline $TARGET...HEAD $AUTHOR"
+CMD="git log --color="$COLOR" --oneline $TARGET...HEAD $AUTHOR"
 
 eval $CMD

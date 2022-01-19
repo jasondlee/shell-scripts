@@ -5,7 +5,7 @@ REBASE=true
 UPSTREAM=upstream
 BRANCH=master
 
-if [ `git branch | grep main | wc -l` == 1 ] ; then
+if [ `git branch | grep " main$" | wc -l` != 0 ] ; then
     BRANCH=main
 fi
 

@@ -1,8 +1,6 @@
 #!/bin/bash
 
-BIN="common/bin"
-LOCAL="/usr/local/bin"
-NLROOT=${NLROOT:-/webdev}
+LOCAL="/home/jdlee/local/bin"
 SRCDIR=`pwd`
 
 function install() {
@@ -23,12 +21,6 @@ function install() {
 if [ "$1" == "" ] ; then
     if [ -w $LOCAL ] ; then
         install $LOCAL
-    else
-        for DIR in `ls -d $NLROOT/NetLedger*` ; do
-            if [ -e $DIR/$BIN ] ; then
-                install $DIR/$BIN
-            fi
-        done
     fi
 else
     install "$1"

@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
 #
 # Provides a function that allows you to choose a JDK.  Just set the environment 
 # variable JDKS_ROOT to the directory containing multiple versions of the JDK

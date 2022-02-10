@@ -1,9 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 MERGE=false
-REBASE=false
+REBASE=true
 UPSTREAM=upstream
 BRANCH=master
+
+if [ `git branch | grep " main$" | wc -l` != 0 ] ; then
+    BRANCH=main
+fi
 
 while getopts "b:u:rm" OPTION; do
     case $OPTION in
@@ -18,8 +24,7 @@ shift $((OPTIND -1))
 
 CUR=`git branch --show-current`
 
-
-git fetch $UPSTREAM && \
+git fetch --all -p && \
     git checkout $BRANCH && \
     git rebase $UPSTREAM/$BRANCH &&
     git checkout $CUR

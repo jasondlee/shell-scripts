@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 if [ ! -e ~/.chevup ] ; then
     echo Config file not found at ~/.chevup

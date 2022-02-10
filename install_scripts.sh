@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 LOCAL="/home/jdlee/local/bin"
 SRCDIR=`pwd`

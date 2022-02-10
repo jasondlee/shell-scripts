@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 # http://www.alfredklomp.com/programming/shrinkpdf
 # Licensed under the 3-clause BSD license:

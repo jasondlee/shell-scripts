@@ -5,15 +5,15 @@ set -euo pipefail
 MERGE=false
 REBASE=true
 UPSTREAM=upstream
-BRANCH=master
+MASTER=master
 
 if [ `git branch | grep " main$" | wc -l` != 0 ] ; then
-    BRANCH=main
+    MASTER=main
 fi
 
 while getopts "b:u:rm" OPTION; do
     case $OPTION in
-        b) BRANCH=$OPTARG ;;
+        b) MASTER=$OPTARG ;;
         u) UPSTREAM=$OPTARG ;;
         r) REBASE=true ; MERGE=false ;;
         m) MERGE=true ; REBASE=false ;;
@@ -25,14 +25,15 @@ shift $((OPTIND -1))
 CUR=`git branch --show-current`
 
 git fetch --all -p && \
-    git checkout $BRANCH && \
-    git rebase $UPSTREAM/$BRANCH &&
+    git checkout $MASTER && \
+    git rebase $UPSTREAM/$MASTER && \
+    git push && \
     git checkout $CUR
 
 if [ "$MERGE" == "true" ] ; then
-    git merge $BRANCH
+    git merge $MASTER
 fi
 
 if [ "$REBASE" == "true" ] ; then
-    git rebase $BRANCH
+    git rebase $MASTER
 fi

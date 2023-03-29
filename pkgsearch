@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo '--> RPM'
+sudo dnf search $1
+
+echo '--> Snap'
+sudo snap search $1
+
+echo '--> Flatpak'
+sudo flatpak search $1

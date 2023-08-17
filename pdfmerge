@@ -1,0 +1,18 @@
+#!/bin/bash
+
+OPTIONS=($@)
+TOTAL_OPTIONS=$#
+INT=0
+
+while [ $INT -lt $(( TOTAL_OPTIONS - 1 )) ]
+do
+    OPT=${OPTIONS[$INT]}
+    INPUT="$INPUT \'$OPT\'"
+
+    INT=$(( INT + 1 ))
+done
+
+OUTPUT=${OPTIONS[$INT]}
+
+echo pdftk $INPUT cat output $OUTPUT
+#pdftk file1.pdf file2.pdf fiel3.pdf cat output outputfile.pdf

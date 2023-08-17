@@ -44,5 +44,4 @@ fi
 echo "Showing log of local workspace compared to $TARGET"
 CMD="git log --color="$COLOR" --oneline $TARGET...HEAD $AUTHOR"
 
-set -x
 eval $CMD

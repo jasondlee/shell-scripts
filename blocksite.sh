@@ -17,7 +17,7 @@ done
 function addToFile() {
     FILE=$1
     shift
-    TEMP_FILE=$(mktemp ) || exit
+    TEMP_FILE=$( mktemp ) || exit
     sudo cp $FILE $TEMP_FILE
     sudo sed -i'' -e 's/^COMMIT//g' $TEMP_FILE
     echo -e "$*" >> $TEMP_FILE
@@ -26,23 +26,29 @@ function addToFile() {
 
 for IP in `host $HOST | grep "has address" | awk '{print $4}'` ; do
     echo "Blocking $IP"
-    BLOCK="-A OUTPUT -p tcp -d $IP -j REJECT" #-j DROP"
-    sudo iptables $BLOCK
-    if [ "$PERM" == "true" ] ; then
-        addToFile $IPTABLES_FILE "$BLOCK"
+    COUNT=`sudo cat $IPTABLES_FILE | grep $IP | wc -l`
+    if [ "$COUNT" == "0" ] ; then
+        BLOCK="-A OUTPUT -p tcp -d $IP -j REJECT" #-j DROP"
+        sudo iptables $BLOCK
+        if [ "$PERM" == "true" ] ; then
+            addToFile $IPTABLES_FILE "$BLOCK"
+        fi
     fi
 done
 
 for IP in `host $HOST | grep "has IPv6 address" | awk '{print $5}'` ; do
     echo "Blocking $IP"
-    OUTPUT="-A OUTPUT -p tcp -d $IP -j REJECT" #-j DROP"
-    INPUT="-A INPUT -p tcp -s $IP -j REJECT" #-j DROP"
-    sudo ip6tables $INPUT
-    sudo ip6tables $OUTPUT
+    OUTPUT="-A OUTPUT -d $IP -j REJECT"
+    INPUT="-A INPUT -s $IP -j REJECT"
+    COUNT=`sudo cat $IP6TABLES_FILE | grep $IP | wc -l`
+    if [ "$COUNT" == "0" ] ; then
+        sudo ip6tables $INPUT
+        sudo ip6tables $OUTPUT
 
-    if [ "$PERM" == "true" ] ; then
-        addToFile $IP6TABLES_FILE "$INPUT"
-        addToFile $IP6TABLES_FILE "$OUTPUT"
+        if [ "$PERM" == "true" ] ; then
+            addToFile $IP6TABLES_FILE "$INPUT"
+            addToFile $IP6TABLES_FILE "$OUTPUT"
+        fi
     fi
 done
 

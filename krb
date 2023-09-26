@@ -1,0 +1,5 @@
+#!/bin/bash -x
+klist -l
+kdestroy -A
+kinit jaslee@IPA.REDHAT.COM
+klist -l

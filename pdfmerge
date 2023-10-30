@@ -14,5 +14,5 @@ done
 
 OUTPUT=${OPTIONS[$INT]}
 
-echo pdftk $INPUT cat output $OUTPUT
+pdftk $INPUT cat output $OUTPUT
 #pdftk file1.pdf file2.pdf fiel3.pdf cat output outputfile.pdf

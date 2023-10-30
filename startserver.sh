@@ -44,6 +44,15 @@ function find_server_dir() {
     fi
 }
 
+function add_cli_commands() {
+    if [ "$CLI" == "" ]; then
+        CLI=`mktemp clicommandsXXX`
+        echo "embed-server -c=$CONFIG" > $CLI
+    fi
+
+    echo "$*" >> $CLI
+}
+
 
 while getopts "cmMfnosSw:L" opt ; do
     case $opt in
@@ -75,51 +84,45 @@ if [ "$SERVER_DIR" == "" -o ! -e "$SERVER_DIR" ] ; then
     exit -1
 fi
 
-PATH=$SERVER_DIR/bin:$PATH
-
-
-JBOSS_HOME=$SERVER_DIR
-echo Starting WildFly from $SERVER_DIR
-
-# pause
-
 sed --in-place "s/#\?JAVA_OPTS=\"\$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=[ny]\"/JAVA_OPTS=\"\$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=$SUSPEND\"/" \
     $SERVER_DIR/bin/standalone.conf
 
-if [ "$OTEL" == "true" ] ; then
-    $SERVER_DIR/bin/jboss-cli.sh << EOL
-    embed-server -c $CONFIG
-
-    /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=DEBUG)
-    /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)
-EOL
+if [ "$DEBUGG_LOGGING" == "true" ] ; then
+    add_cli_commands "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=DEBUG)
+    /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)"
+fi
 
 if [ "$OTEL" == "true" ] ; then
-    $SERVER_DIR/bin/jboss-cli.sh << EOL
-    embed-server -c $CONFIG
-
-    /extension=org.wildfly.extension.opentelemetry:add()
-    /subsystem=opentelemetry:add()
-
+    add_cli_commands "if (outcome != success) of /extension=org.wildfly.extension.opentelemetry:read-resource
+        /extension=org.wildfly.extension.opentelemetry:add()
+        /subsystem=opentelemetry:add()
+    fi
     /subsystem=opentelemetry:write-attribute(name=exporter-type,value=otlp)
     /subsystem=opentelemetry:write-attribute(name=sampler-type,value=on)
     /subsystem=opentelemetry:write-attribute(name=max-queue-size,value=128)
-    /subsystem=opentelemetry:write-attribute(name=max-export-batch-size,value=512)
-EOL
-    #/subsystem=opentelemetry:write-attribute(name=endpoint,value=http://localhost:$PORT)
-    #/subsystem=opentelemetry:write-attribute(name=span-processor-type,value=simple)
-    #/subsystem=opentelemetry:write-attribute(name=endpoint,value=http://localhost:55681/v1/traces)
+    /subsystem=opentelemetry:write-attribute(name=max-export-batch-size,value=512)"
 fi
 
 if [ "$MICROMETER" == "true" ] ; then
-    $SERVER_DIR/bin/jboss-cli.sh << EOL
-        embed-server -c $CONFIG
-        /extension=org.wildfly.extension.micrometer:add
-        /subsystem=micrometer:add(endpoint="http://localhost:4317/v1/metrics")
+    add_cli_commands "if (outcome != success) of /extension=org.wildfly.extension.micrometer:read-resource
+            /extension=org.wildfly.extension.micrometer:add
+            /subsystem=micrometer:add(endpoint=\"http://localhost:4317/v1/metrics\")
+        fi
         /subsystem=micrometer:write-attribute(name=step,value=10)
-        /subsystem=undertow:write-attribute(name=statistics-enabled,value=true)
-EOL
+        /subsystem=undertow:write-attribute(name=statistics-enabled,value=true)"
 fi
+
+if [ "$CLI" != ""  ] ; then
+    echo "Configuring the server..."
+    echo "reload" >> $CLI
+    $SERVER_DIR/bin/jboss-cli.sh --file=$CLI
+    rm $CLI
+fi
+
+PATH=$SERVER_DIR/bin:$PATH
+
+JBOSS_HOME=$SERVER_DIR
+echo Starting WildFly from $SERVER_DIR
 
 if [ "$DONTRUN" != "true" ] ; then
     $SERVER_DIR/bin/standalone.sh -c $CONFIG $STATS

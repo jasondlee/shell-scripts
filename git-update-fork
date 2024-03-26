@@ -7,7 +7,7 @@ REBASE=true
 UPSTREAM=upstream
 MASTER=master
 
-if [ `git branch | grep " main$" | wc -l` != 0 ] ; then
+if git branch | grep -c " main$" &> /dev/null  ; then
     MASTER=main
 fi
 
@@ -15,25 +15,27 @@ while getopts "b:u:rm" OPTION; do
     case $OPTION in
         b) MASTER=$OPTARG ;;
         u) UPSTREAM=$OPTARG ;;
-        r) REBASE=true ; MERGE=false ;;
-        m) MERGE=true ; REBASE=false ;;
+        r) REBASE=true ;
+           MERGE=false ;;
+        m) MERGE=true ;
+           REBASE=false ;;
         *) usage ;;
     esac
 done
 shift $((OPTIND -1))
 
-CUR=`git branch --show-current`
+CUR=$( git branch --show-current )
 
 git fetch --all -p && \
-    git checkout $MASTER && \
-    git rebase $UPSTREAM/$MASTER && \
+    git checkout "$MASTER" && \
+    git rebase "$UPSTREAM/$MASTER" && \
     git push && \
-    git checkout $CUR
+    git checkout "$CUR"
 
 if [ "$MERGE" == "true" ] ; then
-    git merge $MASTER
+    git merge "$MASTER"
 fi
 
 if [ "$REBASE" == "true" ] ; then
-    git rebase $MASTER
+    git rebase "$MASTER"
 fi

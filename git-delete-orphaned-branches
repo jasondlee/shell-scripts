@@ -1,0 +1,28 @@
+#!/bin/bash
+
+CONFIRM=no
+
+while getopts "y" opt ; do
+    case $opt in
+        y) CONFIRM="yes" ;;
+    esac
+done
+
+git fetch --all &>/dev/null
+
+COUNT=`git branch -va | grep -E "\[gone\]" | wc -l`
+
+if [ "$COUNT" == "0" ] ; then
+    echo No orphaned branches found.
+    exit 0
+fi
+
+if [ "$CONFIRM" == "no" ] ; then
+    echo "The following branches will be deleted:"
+    git branch -va | grep -E "\[gone\]" | cut -f 2- -d ']'
+    #sed -e 's/  */ /g'
+    read -p "Press enter to continue, or CTRL-C to cancel."
+fi
+
+#git branch --merged | egrep -v "(^\*|master|dev) #  | xargs git branch -d
+git branch -v | grep "\[gone\]" | awk '{ print $1 }' | xargs git branch -D

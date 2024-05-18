@@ -1,0 +1,13 @@
+#!/bin/bash
+
+OLD=$1
+NEW=$2
+
+if [ "$OLD" == "" -o "$NEW" == "" ] ; then
+    echo You must specify both the old and the new name
+    exit -1
+fi
+
+git branch -m $OLD $NEW
+git push origin --delete $OLD
+git push origin -u $NEW

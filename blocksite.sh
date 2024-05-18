@@ -30,7 +30,7 @@ for IP in $( host "$HOST" | grep "has address" | awk '{print $4}' ) ; do
     #sudo grep -R "$IP" $IPTABLES_FILE &> /dev/null
     if ! sudo grep -R "$IP" $IPTABLES_FILE &> /dev/null ; then
         addToFile $IPTABLES_FILE "-A INPUT -p tcp -d $IP -j REJECT"
-        addToFile $IPTABLES_FILE "-A OUTPUT -p tcp -d $IP -j REJECT"q
+        addToFile $IPTABLES_FILE "-A OUTPUT -p tcp -d $IP -j REJECT"
     fi
 done
 

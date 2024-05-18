@@ -1,20 +1,18 @@
 #!/bin/bash
 
+source `dirname $0`/includes.sh
+
 KEY=$1
 shift
 
-function pause() {
-    echo
-    #read -p "Press enter..."
-}
-
 for DIR in $( fd -t d $KEY | sort -u ) ; do
-    echo DIR=$DIR
+    #echo DIR=$DIR
     pause
     for FILE in $( fd -t f --base-directory "$DIR" -i test ) ; do
         FILE=`basename $FILE`
         FILE=$( echo $FILE | cut -f 1 -d . )
-        TESTS="$TESTS,$FILE"
+        TESTS="$TESTS$SEP$FILE"
+        SEP=,
     done
     pause
 done

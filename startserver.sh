@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source `dirname $0`/includes.sh
+
 SUSPEND=n
 OTEL=false
 CLEAN=false
@@ -10,18 +12,6 @@ MICROMETER=false
 CLI=""
 DEBUG=false
 #STATS="-Dwildfly.undertow.statistics-enabled=false -Dwildfly.statistics-enabled=false -Dwildfly.undertow.active-request-statistics-enabled=false"
-
-function pause() {
-    if [ "$DEBUG" == "true" ] ; then
-        read -r -p "Press enter..."
-    fi
-}
-
-function debug() {
-    if [ "$DEBUG" == "true" ] ; then
-        echo "$*"
-    fi
-}
 
 function clean() {
     if [ -e "$SERVER_DIR" ] ; then
@@ -86,10 +76,6 @@ while getopts "cmMfnosw:Ld" opt ; do
     esac
 done
 
-if [ "$DEBUG" == "true" ] ; then
-    set -x
-fi
-
 echo "Default SERVER_DIR = $SERVER_DIR"
 
 find_server_dir
@@ -122,7 +108,6 @@ if [ "$DEBUG_LOGGING" == "true" ] ; then
     /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)"
 fi
 
-
 pause
 
 if [ "$OTEL" == "true" ] ; then
@@ -133,29 +118,27 @@ if [ "$OTEL" == "true" ] ; then
 
         /subsystem=opentelemetry:write-attribute(name=sampler-type,value=on)
         /subsystem=opentelemetry:write-attribute(name=batch-delay,value=1)
-        /subsystem=opentelemetry:write-attribute(name=max-queue-size,value=1)
-        /subsystem=opentelemetry:write-attribute(name=max-export-batch-size,value=512)
 EOF
 fi
 
 if [ "$MICROMETER" == "true" ] ; then
     #add_cli_commands "if (outcome != success) of /extension=org.wildfly.extension.micrometer:read-resource
-    #add_cli_commands " /extension=org.wildfly.extension.micrometer:add
-    #    /subsystem=micrometer:add(endpoint=\"http://localhost:4318/v1/metrics\")
-    #    /subsystem=micrometer:write-attribute(name=step,value=1)
-    #    /subsystem=undertow:write-attribute(name=statistics-enabled,value=true)"
-    add_cli_commands << EOF
-        if (outcome != success) of /extension=org.wildfly.extension.micrometer:read-resource
-            /extension=org.wildfly.extension.micrometer:add
-        end-if
-
-        if (outcome != success) of /subsystem=micrometer:read-resource
-            /subsystem=micrometer:add()
-            reload
-        end-if
-        /subsystem=micrometer/registry=otlp:add(endpoint="http://localhost:4318/v1/metrics")
-        /subsystem=micrometer/registry=otlp:write-attribute(name="step",value="1")
-EOF
+    add_cli_commands " /extension=org.wildfly.extension.micrometer:add
+       /subsystem=micrometer:add(endpoint=\"http://localhost:4318/v1/metrics\")
+       /subsystem=micrometer:write-attribute(name=step,value=1)
+       /subsystem=undertow:write-attribute(name=statistics-enabled,value=true)"
+#     add_cli_commands << EOF
+#         if (outcome != success) of /extension=org.wildfly.extension.micrometer:read-resource
+#             /extension=org.wildfly.extension.micrometer:add
+#         end-if
+#
+#         if (outcome != success) of /subsystem=micrometer:read-resource
+#             /subsystem=micrometer:add()
+#             reload
+#         end-if
+#         /subsystem=micrometer/registry=otlp:add(endpoint="http://localhost:4318/v1/metrics")
+#         /subsystem=micrometer/registry=otlp:write-attribute(name="step",value="1")
+# EOF
 fi
 
 if [ "$CLI" != ""  ] ; then

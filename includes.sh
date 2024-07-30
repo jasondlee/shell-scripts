@@ -1,6 +1,9 @@
 #!/bin/bash
 
-set -eu
+set -eo pipefail  #u
+
+PAUSE_ENABLED=false
+DEBUG=false
 
 status() {
     echo ">>> $*" >&2
@@ -36,5 +39,14 @@ exiting() {
     error "CTRL-C pressed"
 }
 
-trap exiting SIGINT
-trap cleanup EXIT
+register_exit() {
+    echo
+    trap $1 SIGINT
+}
+
+register_cleanup() {
+    trap $1 EXIT
+}
+
+register_exit exiting
+register_cleanup cleanup

@@ -14,9 +14,8 @@ shift "$(($OPTIND -1))"
 
 BRANCH=$1
 
-git checkout -b $BRANCH
+git branch -d $BRANCH
 
 if [ $REMOTE == "true" ] ; then
-    git push -u origin $1
+	git push -d origin $BRANCH
 fi
-

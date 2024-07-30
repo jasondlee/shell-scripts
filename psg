@@ -1,7 +1,34 @@
 #!/bin/bash
 
+source `dirname $0`/includes.sh
+
 OPTIONS="-el" # -olstart"
 OPTIONS="-ef" # -olstart"
 
-ps "$OPTIONS" | head -1
-ps "$OPTIONS" | grep "$*" | grep -v grep | grep -v psg
+function get_pids() {
+    ps "$OPTIONS" | grep "$PROC_DEF" | grep -v grep | grep -v psg
+}
+
+while getopts "qk" opt ; do
+    case "$opt" in
+        q)
+            QUIET=true ;;
+        k)
+            KILL=true
+            QUIET=true
+            ;;
+    esac
+done
+
+shift $((OPTIND -1))
+PROC_DEF="$*"
+
+if [ -z "$QUIET" ] ; then 
+    get_pids $PROC_DEF | head -1
+fi
+
+if [ "$KILL" == "true" ] ; then
+    get_pids "$PROC_DEF" | awk ' { print $2 } ' | xargs kill -9
+else
+    get_pids "$PROC_DEF"
+fi

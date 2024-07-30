@@ -11,6 +11,8 @@ DEBUG_LOGGING=false
 MICROMETER=false
 CLI=""
 DEBUG=false
+SERVER_DIR=`pwd`/build/target/wildfly*/
+DONTRUN=false
 #STATS="-Dwildfly.undertow.statistics-enabled=false -Dwildfly.statistics-enabled=false -Dwildfly.undertow.active-request-statistics-enabled=false"
 
 function clean() {
@@ -56,7 +58,7 @@ function add_cli_commands() {
 }
 
 
-while getopts "cmMfnosw:Ld" opt ; do
+while getopts "cmMfhnosw:Ld" opt ; do
     debug "=== opt = $opt"
     case "$opt" in
         L) debug "Setting logging level"
@@ -68,6 +70,7 @@ while getopts "cmMfnosw:Ld" opt ; do
         m) CONFIG=standalone-microprofile.xml ;;
         M) MICROMETER="true" ;;
         f) CONFIG=standalone-full.xml ;;
+        h) CONFIG=standalone-full-ha.xml ;;
         s) SUSPEND=y ;;
         #S) STATS=$( echo $STATS | sed -e 's/false/true/g') ;;
         n) DONTRUN="true" ;;
@@ -112,21 +115,23 @@ pause
 
 if [ "$OTEL" == "true" ] ; then
     #add_cli_commands "if (outcome != success) of /extension=org.wildfly.extension.opentelemetry:read-resource
-    add_cli_commands << EOF
-        /extension=org.wildfly.extension.opentelemetry:add()
+    add_cli_commands "/extension=org.wildfly.extension.opentelemetry:add()
         /subsystem=opentelemetry:add()
 
         /subsystem=opentelemetry:write-attribute(name=sampler-type,value=on)
-        /subsystem=opentelemetry:write-attribute(name=batch-delay,value=1)
-EOF
+        /subsystem=opentelemetry:write-attribute(name=batch-delay,value=1)"
 fi
+
+pause
 
 if [ "$MICROMETER" == "true" ] ; then
     #add_cli_commands "if (outcome != success) of /extension=org.wildfly.extension.micrometer:read-resource
     add_cli_commands " /extension=org.wildfly.extension.micrometer:add
        /subsystem=micrometer:add(endpoint=\"http://localhost:4318/v1/metrics\")
-       /subsystem=micrometer:write-attribute(name=step,value=1)
        /subsystem=undertow:write-attribute(name=statistics-enabled,value=true)"
+       #/subsystem=micrometer:write-attribute(name=\"step\",value=\"1\")"
+       #/subsystem=micrometer/registry=prometheus:add(context=/prometheus)"
+
 #     add_cli_commands << EOF
 #         if (outcome != success) of /extension=org.wildfly.extension.micrometer:read-resource
 #             /extension=org.wildfly.extension.micrometer:add
@@ -137,7 +142,7 @@ if [ "$MICROMETER" == "true" ] ; then
 #             reload
 #         end-if
 #         /subsystem=micrometer/registry=otlp:add(endpoint="http://localhost:4318/v1/metrics")
-#         /subsystem=micrometer/registry=otlp:write-attribute(name="step",value="1")
+#
 # EOF
 fi
 

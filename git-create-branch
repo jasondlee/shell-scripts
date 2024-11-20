@@ -2,11 +2,13 @@
 
 source `dirname $0`/includes.sh
 
-REMOTE=false
+REMOTE=true
+REMOTE_NAME=origin
 
-while getopts ':r' OPTION; do
+while getopts 'r:l' OPTION; do
     case "$OPTION" in
-        r) REMOTE=true ;;
+        l) REMOTE=false ;;
+        r) REMOTE_NAME=$OPTARG ;;
     esac
 done
 
@@ -17,6 +19,6 @@ BRANCH=$1
 git checkout -b $BRANCH
 
 if [ $REMOTE == "true" ] ; then
-    git push -u origin $1
+    git push -u $REMOTE_NAME $BRANCH
 fi
 

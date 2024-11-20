@@ -13,7 +13,7 @@ while getopts "b" OPTION; do
 done
 shift $((OPTIND -1))
 
-git branch-log -b "$MASTER" "$*"
+git --no-pager branch-log -b "$MASTER" "$*"
 
 read -r -p "Enter the number of revisions required, then press enter to continue: " NUM
 

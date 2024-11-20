@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source `dirname $0`/includes.sh
+
+COUNT=1
+
+foo() {
+    echo Ran for $COUNT attempts
+}
+
+register_exit foo
+
+while "$@"; do 
+    COUNT=$(( COUNT+1 ))  ;
+    echo $COUNT
+    pause
+done
+
+echo "Run failed after $COUNT attempts"

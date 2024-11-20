@@ -23,7 +23,8 @@ function clean() {
         echo "SERVER_DIR does not exist: $SERVER_DIR"
     fi
 
-    ARCHIVE=$( find "$BASE_DIR" -maxdepth 1 -type f -name \*zip -o -name \*.tar.gz | grep -v 'src\.' )
+	ARCHIVE=$( find "$BASE_DIR" -maxdepth 1 -type f -name \*zip -o -name \*.tar.gz | grep -v 'src\.' )
+
 
     case "$ARCHIVE" in
         *zip )
@@ -88,7 +89,6 @@ pause
 if [ "$CLEAN" == "true" ] ; then
     clean
 fi
-set +x
 
 pause
 
@@ -99,51 +99,39 @@ if [ "$SERVER_DIR" == "" ] || [ ! -e "$SERVER_DIR" ] ; then
     exit 1
 fi
 
-sed --in-place "s/#\?JAVA_OPTS=\"\$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=[ny]\"/JAVA_OPTS=\"\$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=$SUSPEND\"/" \
-    "$SERVER_DIR/bin/standalone.conf"
+sed -i.bak -e '/^JAVA_OPTS.*agentlib:jdwp/d' "$SERVER_DIR/bin/standalone.conf"
+echo "JAVA_OPTS=\"\$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=$SUSPEND\"" >> "$SERVER_DIR/bin/standalone.conf"
 
 pause
 
 debug "DEBUG_LOGGING = $DEBUG_LOGGING"
 
 if [ "$DEBUG_LOGGING" == "true" ] ; then
-    add_cli_commands "/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=DEBUG)
-    /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)"
+    address_cli_commands <<EOF
+/subsystem=logging/console-handler=CONSOLE:write-attribute\(name=level,value=DEBUG\)
+/subsystem=logging/root-logger=ROOT:write-attribute\(name=level,value=DEBUG\)
+EOF
 fi
 
 pause
 
 if [ "$OTEL" == "true" ] ; then
-    #add_cli_commands "if (outcome != success) of /extension=org.wildfly.extension.opentelemetry:read-resource
-    add_cli_commands "/extension=org.wildfly.extension.opentelemetry:add()
-        /subsystem=opentelemetry:add()
-
-        /subsystem=opentelemetry:write-attribute(name=sampler-type,value=on)
-        /subsystem=opentelemetry:write-attribute(name=batch-delay,value=1)"
+    add_cli_commands <<EOF
+/extension=org.wildfly.extension.opentelemetry:add()
+/subsystem=opentelemetry:add()
+/subsystem=opentelemetry:write-attribute(name=sampler-type,value=on)
+/subsystem=opentelemetry:write-attribute(name=batch-delay,value=1)
+EOF
 fi
 
 pause
-
+set -x
 if [ "$MICROMETER" == "true" ] ; then
-    #add_cli_commands "if (outcome != success) of /extension=org.wildfly.extension.micrometer:read-resource
-    add_cli_commands " /extension=org.wildfly.extension.micrometer:add
-       /subsystem=micrometer:add(endpoint=\"http://localhost:4318/v1/metrics\")
-       /subsystem=undertow:write-attribute(name=statistics-enabled,value=true)"
-       #/subsystem=micrometer:write-attribute(name=\"step\",value=\"1\")"
-       #/subsystem=micrometer/registry=prometheus:add(context=/prometheus)"
-
-#     add_cli_commands << EOF
-#         if (outcome != success) of /extension=org.wildfly.extension.micrometer:read-resource
-#             /extension=org.wildfly.extension.micrometer:add
-#         end-if
-#
-#         if (outcome != success) of /subsystem=micrometer:read-resource
-#             /subsystem=micrometer:add()
-#             reload
-#         end-if
-#         /subsystem=micrometer/registry=otlp:add(endpoint="http://localhost:4318/v1/metrics")
-#
-# EOF
+    add_cli_commands <<EOF
+/extension=org.wildfly.extension.micrometer:add
+/subsystem=micrometer:add(endpoint="http://localhost:4318/v1/metrics")
+/subsystem=undertow:write-attribute(name=statistics-enabled,value=true)
+EOF
 fi
 
 if [ "$CLI" != ""  ] ; then
@@ -163,5 +151,3 @@ echo Starting WildFly from "$SERVER_DIR"
 if [ "$DONTRUN" != "true" ] ; then
     "$SERVER_DIR"/bin/standalone.sh -c "$CONFIG"
 fi
-
-set +x

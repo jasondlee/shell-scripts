@@ -9,15 +9,24 @@
 
 TARGET=1.6
 
+for F in *pdf ; do
+    which pdfinfo &>/dev/null
+    if [ $? == 0 ] ; then
+        VERS=`pdfinfo "$F" | grep -i 'pdf version' | cut -f 2 -d : | awk '{$1=$1};1'`
+    else
+        which mdls &>/dev/null
+        if [ $? == 0 ] ; then
+            VERS=`mdls "$F" | grep -i 'kMDItemVersion' | cut -f 2 -d \"`
+        fi
+    fi
 
-for F in *pdf ; do 
-    VERS=`pdfinfo "$F" | grep -i 'pdf version' | cut -f 2 -d : | awk '{$1=$1};1'`
     if [ "$VERS" != "1.6" ] ; then
         echo "Converting $F from $VERS to $TARGET"
         cp "$F" "$F.$VERS"
         gs -q -sDEVICE=pdfwrite -dCompatibilityLevel=$TARGET -o "$F" "$F.$VERS"
         if [ $? == 0 ] ; then
-            rm "$F.$VERS"
+            echo
+        #    rm "$F.$VERS"
         fi
     fi
 done

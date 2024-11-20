@@ -1,0 +1,9 @@
+#!/bin/bash
+
+PID=`lsof -Pi :$1 -sTCP:LISTEN -t`
+
+if [ "$PID" != "" ] ; then
+    ps -ef | grep $PID | grep -v grep
+else 
+    echo No processes listening on $1
+fi

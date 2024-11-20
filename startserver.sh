@@ -23,8 +23,8 @@ function clean() {
         echo "SERVER_DIR does not exist: $SERVER_DIR"
     fi
 
-	ARCHIVE=$( find "$BASE_DIR" -maxdepth 1 -type f -name \*zip -o -name \*.tar.gz | grep -v 'src\.' )
 
+	ARCHIVE=$( find "$BASE_DIR" -maxdepth 1 -type f -name \*zip -o -name \*.tar.gz | grep -v 'src\.' )
 
     case "$ARCHIVE" in
         *zip )

@@ -9,20 +9,28 @@ while getopts "y" opt ; do
 done
 
 git fetch --all &>/dev/null
+git fetch --prune &>/dev/null
 
-COUNT=`git branch -va | grep -E "\[gone\]" | wc -l`
+#git branch -vv | grep 'gone]' | awk '{print $1}' | xargs git branch -D
+COUNT=`git branch -vv | grep "gone]" | wc -l`
 
 if [ "$COUNT" == "0" ] ; then
     echo No orphaned branches found.
     exit 0
 fi
 
-if [ "$CONFIRM" == "no" ] ; then
-    echo "The following branches will be deleted:"
-    git branch -va | grep -E "\[gone\]" | cut -f 2- -d ']'
-    #sed -e 's/  */ /g'
-    read -p "Press enter to continue, or CTRL-C to cancel."
-fi
+BRANCHES=`git branch -vv | grep "gone]" | awk '{print $1}'`
 
-#git branch --merged | egrep -v "(^\*|master|dev) #  | xargs git branch -d
-git branch -v | grep "\[gone\]" | awk '{ print $1 }' | xargs git branch -D
+if [ "$BRANCHES" != "" ] ; then
+    if [ "$CONFIRM" == "no" ] ; then
+        echo "The following branches will be deleted:"
+        echo $BRANCHES
+        #sed -e 's/  */ /g'
+        read -p "Press enter to continue, or CTRL-C to cancel."
+    fi
+
+    #git branch --merged | egrep -v "(^\*|master|dev) #  | xargs git branch -d
+    git branch -vv | grep "gone\]" | awk '{ print $1 }' | xargs git branch -D
+else
+    echo "No orphaned branches"
+fi

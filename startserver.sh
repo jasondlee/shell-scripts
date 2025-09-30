@@ -107,7 +107,7 @@ pause
 debug "DEBUG_LOGGING = $DEBUG_LOGGING"
 
 if [ "$DEBUG_LOGGING" == "true" ] ; then
-    address_cli_commands <<EOF
+    add_cli_commands <<EOF
 /subsystem=logging/console-handler=CONSOLE:write-attribute\(name=level,value=DEBUG\)
 /subsystem=logging/root-logger=ROOT:write-attribute\(name=level,value=DEBUG\)
 EOF
@@ -116,27 +116,26 @@ fi
 pause
 
 if [ "$OTEL" == "true" ] ; then
-    add_cli_commands <<EOF
-/extension=org.wildfly.extension.opentelemetry:add()
+    add_cli_commands "/extension=org.wildfly.extension.opentelemetry:add()
 /subsystem=opentelemetry:add()
 /subsystem=opentelemetry:write-attribute(name=sampler-type,value=on)
-/subsystem=opentelemetry:write-attribute(name=batch-delay,value=1)
-EOF
+/subsystem=opentelemetry:write-attribute(name=batch-delay,value=10)"
 fi
 
 pause
 set -x
 if [ "$MICROMETER" == "true" ] ; then
-    add_cli_commands <<EOF
-/extension=org.wildfly.extension.micrometer:add
-/subsystem=micrometer:add(endpoint="http://localhost:4318/v1/metrics")
-/subsystem=undertow:write-attribute(name=statistics-enabled,value=true)
-EOF
+    add_cli_commands "/extension=org.wildfly.extension.micrometer:add
+/subsystem=micrometer:add(endpoint="http://localhost:4318/v1/metrics",step="1")
+/subsystem=undertow:write-attribute(name=statistics-enabled,value=true)"
 fi
 
+pause
+
 if [ "$CLI" != ""  ] ; then
-    echo "Configuring the server..."
+    echo "Configuring the server:"
     echo "reload" >> "$CLI"
+    cat "$CLI"
     "$SERVER_DIR"/bin/jboss-cli.sh --echo-command "--file=$CLI"
     rm "$CLI"
 fi

@@ -24,9 +24,11 @@ for HOST in andrew.theleehouse.net \
     im.jasondl.ee \
     noah.theleehouse.net \
     repository.steeplesoft.com \
+    mealie.theleehouse.net \
     theleehouse.net ; do
 
     check $HOST 443
 done
 
 check minecraft.theleehouse.net 25565
+ssh jdlee@$vps2 "echo"

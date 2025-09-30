@@ -20,13 +20,14 @@ function findtests() {
     done
 }
 
-while getopts "p:t:scP:" opt ; do
+while getopts "p:t:scP:S" opt ; do
     case "$opt" in
         p) findtests "$OPTARG" ;;
         t) TESTS="$OPTARG" ;;
         s) SUSPEND=y ;;
         c) CLEAN=clean ;;
-        P) PROFILE=" -D$OPTARG"
+        P) PROFILE=" -P$OPTARG" ;;
+        S) SECMGR="-Dsecurity.manager=true"
     esac
 done
 
@@ -36,8 +37,10 @@ if [ "$TESTS" == "" ] ; then
     findtests "$1"
 fi
 
+echo Testing $TESTS
+
 if [ "$TESTS" != "" ] ; then
-    mvn $CLEAN test -Dtest="$TESTS" -Dtestsuite.integration.container.logging=true -Dsuspend=$SUSPEND $PROFILE
+    mvn $CLEAN test -Dtest="$TESTS" -Dtestsuite.integration.container.logging=true -Dsuspend=$SUSPEND $PROFILE $SECMGR
 else
    echo "No tests found for '$KEY'"
 fi

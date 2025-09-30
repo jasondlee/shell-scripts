@@ -5,13 +5,15 @@ if git branch | grep -c " main$" &> /dev/null  ; then
     MASTER=main
 fi
 
-while getopts "b" OPTION; do
+while getopts "b:" OPTION; do
     case $OPTION in
         b) MASTER=$OPTARG ;;
         *) echo "Unknown option: $OPTION" ; exit 1 ;;
     esac
 done
 shift $((OPTIND -1))
+
+set -x
 
 git --no-pager branch-log -b "$MASTER" "$*"
 

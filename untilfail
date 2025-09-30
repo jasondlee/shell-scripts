@@ -2,6 +2,11 @@
 
 source `dirname $0`/includes.sh
 
+if [ "$1" == "" ] ; then
+    echo "A command line must be provided"
+    exit -1
+fi
+
 COUNT=1
 
 foo() {
@@ -10,7 +15,7 @@ foo() {
 
 register_exit foo
 
-while "$@"; do 
+while eval "$@"; do 
     COUNT=$(( COUNT+1 ))  ;
     echo $COUNT
     pause

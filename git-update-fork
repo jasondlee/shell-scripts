@@ -6,6 +6,19 @@ MERGE=false
 REBASE=true
 UPSTREAM=upstream
 MASTER=master
+DEBUG=false
+
+function checkExitCode() {
+    RC=$1
+    shift
+    MSG="$*"
+    if [ $RC != 0 ] ; then
+        if [ "$MSG" != "" ] ; then
+            error "$MSG"
+        fi
+        exit $RC
+    fi
+}
 
 if git branch | grep -c " main$" &> /dev/null  ; then
     MASTER=main
@@ -26,16 +39,44 @@ shift $((OPTIND -1))
 
 CUR=$( git branch --show-current )
 
-git fetch --all -p && \
-    git checkout "$MASTER" && \
-    git rebase "$UPSTREAM/$MASTER" && \
-    git push && \
+debug "Fetching all remotes..."
+git fetch --all -p
+checkExitCode $?
+
+pause
+
+debug "Switching to $MASTER"
+git checkout "$MASTER"
+checkExitCode $?
+
+pause
+
+debug "Rebasing"
+git rebase "$UPSTREAM/$MASTER"
+checkExitCode $?
+
+pause
+
+debug "Pushing to origin"
+git push
+checkExitCode $?
+
+pause
+
+if [ "$CUR" != "$MASTER" ] ; then
+    debug "Checking out working branch $CUR"
     git checkout "$CUR"
+    checkExitCode $?
 
-if [ "$MERGE" == "true" ] ; then
-    git merge "$MASTER"
-fi
-
-if [ "$REBASE" == "true" ] ; then
-    git rebase "$MASTER"
+    pause
+    
+    if [ "$MERGE" == "true" ] ; then
+        debug "Merging $MASTER into $CUR"
+        git merge "$MASTER"
+    fi
+    
+    if [ "$REBASE" == "true" ] ; then
+        debug "Rebaseing $CUR on $MASTER"
+        git rebase "$MASTER"
+    fi
 fi

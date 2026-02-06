@@ -37,9 +37,9 @@ if [ "$TESTS" == "" ] ; then
     findtests "$1"
 fi
 
-echo Testing $TESTS
-
 if [ "$TESTS" != "" ] ; then
+    echo -e "Testing:\n    ${TESTS//,/$'\n    '}"
+    echo -e "Testing:\n    ${TESTS}"
     mvn $CLEAN test -Dtest="$TESTS" -Dtestsuite.integration.container.logging=true -Dsuspend=$SUSPEND $PROFILE $SECMGR
 else
    echo "No tests found for '$KEY'"

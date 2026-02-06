@@ -4,18 +4,33 @@
 
 #set +o pipefail
 
-function check() {
+function report() {
+    HOST=$1
+    STATUS=$2
+
+    if [ $STATUS != 0 ] ; then
+        echo '****' "$HOST is NOT HEALTHY" '****'
+    else
+        echo "$HOST is healthy"
+    fi
+}
+
+function checkSite() {
+    SITE=$1
+
+    http --check-status --follow https://$SITE &>/dev/null
+
+    report $SITE $?
+}
+
+function checkService() {
     HOST=$1
     PORT=$2
     PORT=${PORT:-443}
 
     nc -zv -w 1 $HOST $PORT &>/dev/null
 
-    if [ $? != 0 ] ; then
-        echo '****' "$HOST is NOT HEALTHY" '****'
-    else
-        echo "$HOST is healthy"
-    fi
+    report $HOST $?
 }
 
 for HOST in andrew.theleehouse.net \
@@ -24,11 +39,12 @@ for HOST in andrew.theleehouse.net \
     im.jasondl.ee \
     noah.theleehouse.net \
     repository.steeplesoft.com \
+    board.theleehouse.net \
     mealie.theleehouse.net \
     theleehouse.net ; do
 
-    check $HOST 443
+    checkSite $HOST
 done
 
-check minecraft.theleehouse.net 25565
+checkService minecraft.theleehouse.net 25565
 ssh jdlee@$vps2 "echo"

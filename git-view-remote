@@ -1,0 +1,17 @@
+#!/bin/sh
+
+REMOTE=origin
+
+while getopts "ir:" opt ; do
+    case "$opt" in
+        i) ISSUES="/issues" ;;
+        r) REMOTE=$OPTARG ;;
+        *) echo "Unrecognized option: $opt" ; exit 1 ;;
+    esac
+done
+
+URL=`git remote -v | grep $REMOTE | head -1 | awk '{ print $2 }' | cut -f 2- -d '@' | sed -e 's/:/\//g' | sed -e 's/\.git//'`
+URL="https://$URL$ISSUES"
+
+echo Opening $URL
+open $URL

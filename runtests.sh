@@ -5,8 +5,11 @@ source `dirname $0`/includes.sh
 SUSPEND=n
 CLEAN=
 TESTS=
+OPTS=
+DEBUG=false
 
 function findtests() {
+    debug "Looking for tests matching '$1'"
     SEP=
     for DIR in $( fd -t d $1 | sort -u ) ; do
         pause
@@ -15,19 +18,22 @@ function findtests() {
             FILE=$( echo $FILE | cut -f 1 -d . )
             TESTS="$TESTS$SEP$FILE"
             SEP=,
-            pause
         done
     done
 }
 
-while getopts "p:t:scP:S" opt ; do
+while getopts "cdD:Lp:P:sSt:w" opt ; do
     case "$opt" in
-        p) findtests "$OPTARG" ;;
-        t) TESTS="$OPTARG" ;;
-        s) SUSPEND=y ;;
         c) CLEAN=clean ;;
+        d) DEBUG=true ;;
+        p) findtests "$OPTARG" ;;
+        s) SUSPEND=y ;;
+        t) TESTS="${TESTS}${OPTARG}" ;;
+        w) WAIT=true ;;
+        D) OPTS="$OPTS -D$OPTARG" ;;
+        L) OPTS="$OPTS -Dlegacy-ee-full-server-tests -Dlegacy-ee-tests" ;;
         P) PROFILE=" -P$OPTARG" ;;
-        S) SECMGR="-Dsecurity.manager=true"
+        S) SECMGR="-Dsecurity.manager=true" ;;
     esac
 done
 
@@ -40,7 +46,12 @@ fi
 if [ "$TESTS" != "" ] ; then
     echo -e "Testing:\n    ${TESTS//,/$'\n    '}"
     echo -e "Testing:\n    ${TESTS}"
-    mvn $CLEAN test -Dtest="$TESTS" -Dtestsuite.integration.container.logging=true -Dsuspend=$SUSPEND $PROFILE $SECMGR
+    if [ "$WAIT" == "true" ] ; then
+        read -p "Press enter to begin..."
+    fi
+    COMMAND="mvn --fail-fast -Dsurefire.skipAfterFailureCount=1 -Dtestsuite.integration.container.logging=true -Dsuspend=$SUSPEND $PROFILE $SECMGR -Dtest="$TESTS" $OPTS $CLEAN test"
+    debug "Executing '$COMMAND'"
+    ${COMMAND}
 else
    echo "No tests found for '$KEY'"
 fi

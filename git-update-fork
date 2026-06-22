@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source `dirname $0`/includes.sh
+source $(dirname $0)/includes.sh
 
 MERGE=false
 REBASE=true
@@ -24,9 +24,10 @@ if git branch | grep -c " main$" &> /dev/null  ; then
     MASTER=main
 fi
 
-while getopts "b:u:rm" OPTION; do
+while getopts "b:du:rm" OPTION; do
     case $OPTION in
         b) MASTER=$OPTARG ;;
+        d) DEBUG=true ;;
         u) UPSTREAM=$OPTARG ;;
         r) REBASE=true ;
            MERGE=false ;;
@@ -37,9 +38,14 @@ while getopts "b:u:rm" OPTION; do
 done
 shift $((OPTIND -1))
 
-CUR=$( git branch --show-current )
+CUR_BRANCH=$( git branch --show-current )
+
+debug "Determining worktree root if needed"
+CURRENT_DIR=$(pwd)
+WORKTREE_ROOT=$(git worktree list | head -1 | cut -f 1 -d ' ')
 
 debug "Fetching all remotes..."
+cd $WORKTREE_ROOT
 git fetch --all -p
 checkExitCode $?
 
@@ -63,20 +69,24 @@ checkExitCode $?
 
 pause
 
-if [ "$CUR" != "$MASTER" ] ; then
-    debug "Checking out working branch $CUR"
-    git checkout "$CUR"
+if [ "$CUR_BRANCH" != "$MASTER" ] ; then
+    debug "Checking out working branch $CUR_BRANCH"
+    cd $CURRENT_DIR
+    git checkout "$CUR_BRANCH"
     checkExitCode $?
 
     pause
     
     if [ "$MERGE" == "true" ] ; then
-        debug "Merging $MASTER into $CUR"
+        debug "Merging $MASTER into $CUR_BRANCH"
         git merge "$MASTER"
     fi
     
     if [ "$REBASE" == "true" ] ; then
-        debug "Rebaseing $CUR on $MASTER"
+        debug "Rebasing $CUR_BRANCH on $MASTER"
         git rebase "$MASTER"
     fi
 fi
+
+# For good measure
+cd $CURRENT_DIR

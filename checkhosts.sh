@@ -47,4 +47,5 @@ for HOST in andrew.theleehouse.net \
 done
 
 checkService minecraft.theleehouse.net 25565
+checkService vps2.steeplesoft.com 4242
 ssh jdlee@$vps2 "echo"

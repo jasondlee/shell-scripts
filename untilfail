@@ -2,7 +2,7 @@
 
 source `dirname $0`/includes.sh
 
-if [ "$1" == "" ] ; then
+if [ "$@" == "" ] ; then
     echo "A command line must be provided"
     exit -1
 fi
@@ -15,9 +15,10 @@ foo() {
 
 register_exit foo
 
+echo -n -e "\033]0;First iteration\007"
 while eval "$@"; do 
     COUNT=$(( COUNT+1 ))  ;
-    echo $COUNT
+    echo -n -e "\033]0;$COUNT successful iteration(s)\007"
     pause
 done
 
